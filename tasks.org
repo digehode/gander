@@ -1,0 +1,40 @@
+* Overview
+
+ - Each DType object can be asked to return a list of tests
+ - Each test has a priority (relative to its own object's list, not
+   global) that orders the tests by how efficiently they can cause
+   this DType to be rejected as an option. Example: if it contains
+   values out of range, it can be rejected fairly quickly compared to
+   something that requires statistical tests or hash calculations.
+ - Tests return values:
+   - Returning =None= means the data cannot be of this DType
+   - Returning anything else means it *could* be of this type
+   - Numerical values between 0 and 1 represent likelihood of being
+     correct. Based on who knows what, at this point.
+ - Each test has requirements. Requirements describe the data that it
+   can function on. Example: must have N bytes beginning at offset X,
+   must be at least of a given length, etc.
+* Tasks
+
+** Infrastructure
+  - [ ] Add unit testing framework
+  - [ ] Check passing list of requirements into =DTest.__init__=
+    behaves properly and doesn't leave us with objects shared that get
+    clobbered
+  - [ ] superclass representing a type (DType)
+  - [ ] engine that takes a series of DType objects, running data
+    through them based on priority (based on efficient rejection) and
+    suitability (based on requirements for rejection)
+  - [ ] Add option to turn None values into low likelihood values. For
+    example, a zip file not beginning PK would normally be rejected,
+    but with this option set it would still have the contents
+    analysed, in case of corruption or intentional mangling of
+    headers. Would be *sloooow*
+** Types
+ - [ ] File types. Zip, for e.g. Tests:
+   - Look for header. Requires header portion. High priority.
+   - Check validity of content
+ - [ ] Base64 (uuencode, base80, etc)
+   - Check values in range (fast)
+   - Check decode works (slower)
+ 
